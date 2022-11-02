@@ -7,6 +7,11 @@
     </nav>
 
     <div class="container">
+
+      <ul>
+          Erro: <b>{{ this.errors }}</b>
+      </ul>
+
       <form @submit.prevent="salvar">
         <label>COD</label>
         <input type="text" placeholder="Cod" v-model="amostra.cod" />
@@ -78,6 +83,7 @@ export default {
         obs: "",
       },
       amostras: [],
+      errors: []
     };
   },
   name: "App",
@@ -93,9 +99,12 @@ export default {
     salvar() {
       Amostra.salvar(this.amostra).then((resposta) => {
         this.amostra = {}
-        console.log(resposta.data);
+        console.log(`${resposta.data.nomeCientifico} Cadastrado com sucesso`);
         this.listar();
-      });
+        this.errors = []
+      }).catch(e => {
+        this.errors = e.response.data
+      })
     },
   },
 };
