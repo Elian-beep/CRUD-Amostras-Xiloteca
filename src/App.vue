@@ -7,11 +7,21 @@
     </nav>
 
     <div class="container">
-      <form>
+      <form @submit.prevent="salvar">
+        <label>COD</label>
+        <input type="text" placeholder="Cod" v-model="amostra.cod" />
         <label>Nome Vulgar</label>
-        <input type="text" placeholder="Nome Vulgar" />
-        <label>Família</label>
-        <input type="number" placeholder="Família" />
+        <input
+          type="text"
+          placeholder="Nome Vulgar"
+          v-model="amostra.nomeVulgar"
+        />
+        <label>Nome Científico</label>
+        <input
+          type="text"
+          placeholder="Nome Científico"
+          v-model="amostra.nomeCientifico"
+        />
 
         <button class="waves-effect waves-light btn-small">
           Salvar<i class="material-icons left">save</i>
@@ -21,16 +31,16 @@
       <table>
         <thead>
           <tr>
+            <th>COD</th>
             <th>NOME VULGAR</th>
-            <th>FAMÍLIA</th>
             <th>OPÇÕES</th>
           </tr>
         </thead>
 
         <tbody>
           <tr v-for="amostra of amostras" :key="amostra.id">
+            <td>{{ amostra.cod }}</td>
             <td>{{ amostra.nomeVulgar }}</td>
-            <td>{{ amostra.familia }}</td>
             <td>
               <button class="waves-effect btn-small blue darken-1">
                 <i class="material-icons">create</i>
@@ -47,28 +57,52 @@
 </template>
 
 <script>
-
-import Amostra from './services/amostras.js';
+import Amostra from "./services/amostras.js";
 
 export default {
-
-  data(){
-    return{
-      amostras: []
-    }
+  data() {
+    return {
+      amostra: {
+        cod: "",
+        lamina: "",
+        herb: "",
+        familia: "",
+        nomeCientifico: "",
+        nomeVulgar: "",
+        procedencia: "",
+        coletor: "",
+        dataColeta: "",
+        determinador: "",
+        remetente: "",
+        desc: "",
+        obs: "",
+      },
+      amostras: [],
+    };
   },
   name: "App",
-  mounted(){
-    Amostra.listar().then(resposta => {
-      console.log(resposta.data);
-      this.amostras = resposta.data;
-    })
-  }
+  mounted() {
+    this.listar()
+  },
+  methods: {
+    listar() {
+      Amostra.listar().then((resposta) => {
+        this.amostras = resposta.data;
+      });
+    },
+    salvar() {
+      Amostra.salvar(this.amostra).then((resposta) => {
+        this.amostra = {}
+        console.log(resposta.data);
+        this.listar();
+      });
+    },
+  },
 };
 </script>
 
 <style>
-.container{
+.container {
   margin-top: 1rem;
 }
 </style>
