@@ -36,21 +36,21 @@
       <table>
         <thead>
           <tr>
-            <th>COD</th>
+            <th>ID</th>
             <th>NOME VULGAR</th>
             <th>OPÇÕES</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr v-for="amostra of amostras" :key="amostra.id">
-            <td>{{ amostra.cod }}</td>
+          <tr v-for="amostra of amostras" :key="amostra._id">
+            <td>{{ amostra._id }}</td>
             <td>{{ amostra.nomeVulgar }}</td>
             <td>
-              <button class="waves-effect btn-small blue darken-1">
+              <button @click="editar(amostra)" class="waves-effect btn-small blue darken-1">
                 <i class="material-icons">create</i>
               </button>
-              <button class="waves-effect btn-small red darken-1">
+              <button @click="remover(amostra)" class="waves-effect btn-small red darken-1">
                 <i class="material-icons">delete_sweep</i>
               </button>
             </td>
@@ -68,6 +68,7 @@ export default {
   data() {
     return {
       amostra: {
+        id: "",
         cod: "",
         lamina: "",
         herb: "",
@@ -96,16 +97,44 @@ export default {
         this.amostras = resposta.data;
       });
     },
+
     salvar() {
-      Amostra.salvar(this.amostra).then((resposta) => {
-        this.amostra = {}
-        console.log(`${resposta.data.nomeCientifico} Cadastrado com sucesso`);
-        this.listar();
-        this.errors = []
-      }).catch(e => {
-        this.errors = e.response.data
-      })
+      if(!this.amostra._id){
+        Amostra.salvar(this.amostra).then((resposta) => {
+          this.amostra = {}
+          console.log(`${resposta.data.nomeCientifico} Cadastrado com sucesso`);
+          this.listar();
+          this.errors = []
+        }).catch(e => {
+          this.errors = e.response.data
+        })
+      }else{
+        Amostra.atualizar(this.amostra).then((resposta) => {
+          this.amostra = {}
+          console.log(resposta.data.message);
+          this.listar();
+          this.errors = []
+        }).catch(e => {
+          this.errors = e.response.data
+        })
+      }
     },
+    editar(amostra){
+      this.amostra = amostra;
+    },
+    remover(amostra){
+
+      if (confirm('Deseja excluir o produto?')) {
+        Amostra.apagar(amostra).then(resposta => {
+          console.log(resposta.data);
+          this.listar();
+          this.errors = [];
+        }).catch(e => [
+          this.errors = e.response.data
+        ]);
+      }
+
+    }
   },
 };
 </script>
