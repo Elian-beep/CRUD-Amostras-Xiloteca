@@ -12,6 +12,17 @@
         <b>{{ this.errors }}</b>
       </ul>
 
+      <form @submit.prevent >
+        <label>COD</label>
+        <input type="number" placeholder="Cod" v-model="indiceXlx" />
+
+        <button @click="buscarXlsx(indiceXlx)" class="waves-effect waves-light btn-small">Buscar</button>
+      </form>
+        <button @click="nextIndice" class="waves-effect waves-light btn-small">Próximo</button>
+        <button @click="prevIndice" class="waves-effect waves-light btn-small">Anterior</button>
+      <br />
+      <br /><br />
+
       <form @submit.prevent="salvar">
         <label>COD</label>
         <input type="text" placeholder="Cod" v-model="amostra.cod" />
@@ -39,26 +50,41 @@
         />
 
         <label>Procedência</label>
-        <input type="text" placeholder="Procedência" v-model="amostra.procedencia" />
+        <input
+          type="text"
+          placeholder="Procedência"
+          v-model="amostra.procedencia"
+        />
 
         <label>Coletor</label>
         <input type="text" placeholder="Coletor" v-model="amostra.coletor" />
 
         <label>Data da Coleta</label>
-        <input type="text" placeholder="dd/mm/yyyy" v-model="amostra.dataColeta" />
+        <input
+          type="text"
+          placeholder="dd/mm/yyyy"
+          v-model="amostra.dataColeta"
+        />
 
         <label>Determinador</label>
-        <input type="text" placeholder="Determinador" v-model="amostra.determinador" />
+        <input
+          type="text"
+          placeholder="Determinador"
+          v-model="amostra.determinador"
+        />
 
         <label>Remetente</label>
-        <input type="text" placeholder="Remetente" v-model="amostra.remetente" />
+        <input
+          type="text"
+          placeholder="Remetente"
+          v-model="amostra.remetente"
+        />
 
         <label>Desc</label>
         <textarea type="" placeholder="Desc" v-model="amostra.desc"></textarea>
 
         <label>Obs</label>
         <input type="text" placeholder="Obs" v-model="amostra.obs" />
-
 
         <button class="waves-effect waves-light btn-small">
           Salvar<i class="material-icons left">save</i>
@@ -68,7 +94,7 @@
       <table>
         <thead>
           <tr>
-            <th>ID</th>
+            <th>COD</th>
             <th>NOME VULGAR</th>
             <th>OPÇÕES</th>
           </tr>
@@ -76,7 +102,7 @@
 
         <tbody>
           <tr v-for="amostra of amostras" :key="amostra._id">
-            <td>{{ amostra._id }}</td>
+            <td>{{ amostra.cod }}</td>
             <td>{{ amostra.nomeVulgar }}</td>
             <td>
               <button
@@ -101,12 +127,12 @@
 
 <script>
 import Amostra from "./services/amostras.js";
+import Xlsx from "./services/xlsx.js";
 
 export default {
   data() {
     return {
       amostra: {
-        id: "",
         cod: "",
         lamina: "",
         herb: "",
@@ -123,6 +149,7 @@ export default {
       },
       amostras: [],
       errors: [],
+      indiceXlx: 0
     };
   },
   name: "App",
@@ -132,7 +159,6 @@ export default {
   methods: {
     listar() {
       Amostra.listar().then((resposta) => {
-        console.log(typeof resposta);
         this.amostras = resposta.data;
       });
     },
@@ -178,11 +204,45 @@ export default {
           .catch((e) => [(this.errors = e.response.data)]);
       }
     },
+    // MÉTODOS DE BUSCA POR INDICE XLSX 
+    buscarXlsx(indice){
+      this.indiceXlx = indice;
+      Xlsx.getRowXlsx(this.indiceXlx).then((response) => {
+        this.amostra = response.data;
+        console.log(this.amostra.cod);
+      });
+    },
+    nextIndice(){
+      this.indiceXlx++;
+    },
+    prevIndice(){
+      if(this.indiceXlx <= 0){
+        console.log("Indici mínimo atingido");
+      }else{
+        this.indiceXlx--;
+      }
+    }
   },
 };
 </script>
 
 <style>
+/* PARA MODO LIGHT - COMENTE DAQUI */
+#app {
+  background: #01020f;
+  color: aliceblue;
+}
+
+input,
+textarea {
+  color: aliceblue;
+}
+
+input::placeholder {
+  color: #9a9a9a;
+}
+/* ATÉ AQUI */
+
 .container {
   margin-top: 1rem;
 }
