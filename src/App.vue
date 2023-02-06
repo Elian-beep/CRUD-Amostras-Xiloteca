@@ -12,17 +12,6 @@
         <b>{{ this.errors }}</b>
       </ul>
 
-      <form @submit.prevent >
-        <label>COD</label>
-        <input type="number" placeholder="Cod" v-model="indiceXlx" />
-
-        <button @click="buscarXlsx(indiceXlx)" class="waves-effect waves-light btn-small">Buscar</button>
-      </form>
-        <button @click="nextIndice" class="waves-effect waves-light btn-small">Próximo</button>
-        <button @click="prevIndice" class="waves-effect waves-light btn-small">Anterior</button>
-      <br />
-      <br /><br />
-
       <form @submit.prevent="salvar">
         <label>COD</label>
         <input type="text" placeholder="Cod" v-model="amostra.cod" />
@@ -91,6 +80,24 @@
         </button>
       </form>
 
+      <form @submit.prevent>
+        <label>COD</label>
+        <input type="number" placeholder="Cod" v-model="indiceXlx" />
+
+        <button
+          @click="buscarXlsx(indiceXlx)"
+          class="waves-effect waves-light btn-small"
+        >
+          Buscar
+        </button>
+      </form>
+      <button @click="nextIndice" class="waves-effect waves-light btn-small">
+        Próximo
+      </button>
+      <button @click="prevIndice" class="waves-effect waves-light btn-small">
+        Anterior
+      </button>
+
       <table>
         <thead>
           <tr>
@@ -149,7 +156,7 @@ export default {
       },
       amostras: [],
       errors: [],
-      indiceXlx: 0
+      indiceXlx: 0,
     };
   },
   name: "App",
@@ -165,6 +172,7 @@ export default {
 
     salvar() {
       if (!this.amostra._id) {
+        this.amostra.cod = this.amostra.cod.toUpperCase();
         Amostra.salvar(this.amostra)
           .then((resposta) => {
             this.amostra = {};
@@ -204,24 +212,24 @@ export default {
           .catch((e) => [(this.errors = e.response.data)]);
       }
     },
-    // MÉTODOS DE BUSCA POR INDICE XLSX 
-    buscarXlsx(indice){
+    // MÉTODOS DE BUSCA POR INDICE XLSX
+    buscarXlsx(indice) {
       this.indiceXlx = indice;
       Xlsx.getRowXlsx(this.indiceXlx).then((response) => {
         this.amostra = response.data;
         console.log(this.amostra.cod);
       });
     },
-    nextIndice(){
+    nextIndice() {
       this.indiceXlx++;
     },
-    prevIndice(){
-      if(this.indiceXlx <= 0){
+    prevIndice() {
+      if (this.indiceXlx <= 0) {
         console.log("Indici mínimo atingido");
-      }else{
+      } else {
         this.indiceXlx--;
       }
-    }
+    },
   },
 };
 </script>
